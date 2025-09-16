@@ -3,15 +3,16 @@ package dto
 import "time"
 
 type RequestOTPDTO struct {
-	Phone string `json:"phone" binding:"required"`
+	Phone uint `json:"phone" binding:"required"`
 }
 
 type RequestOTPResponse struct {
 	Message string `json:"message"`
+	OTP   string `json:"otp"`
 }
 
 type VerifyOTPDTO struct {
-	Phone string `json:"phone" binding:"required"`
+	Phone uint `json:"phone" binding:"required"`
 	OTP   string `json:"otp" binding:"required"`
 }
 
