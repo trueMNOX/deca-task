@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"deca-task/internal/models"
+	"errors"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -16,6 +17,8 @@ type authrepository struct {
 	db    *gorm.DB
 	redis *redis.Client
 }
+
+var ErrRateLimitExceeded = errors.New("rate limit exceeded")
 
 func NewAuthRepository(db *gorm.DB, redis *redis.Client) *authrepository {
 	return &authrepository{
@@ -60,6 +63,23 @@ func (r *authrepository) SaveOTP(phone uint) (string, error) {
 	}
 
 	return otp, nil
+}
+
+func (r *authrepository) IncrementOtpRequestCount(phone uint, window time.Duration, limit int) error {
+	ctx := context.Background()
+	key := fmt.Sprintf("otp:rate:%d", phone)
+
+	count, err := r.redis.Incr(ctx, key).Result()
+	if err != nil {
+		return fmt.Errorf("failed to increment rate limit: %v", err)
+	}
+	if count == 1 {
+		_ = r.redis.Expire(ctx, key, window).Err()
+	}
+	if count > int64(limit) {
+		return ErrRateLimitExceeded
+	}
+	return nil
 }
 func (r *authrepository) GetOtpFromRedis(phone string) (string, error) {
 	ctx := context.Background()

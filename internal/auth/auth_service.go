@@ -5,6 +5,7 @@ import (
 	"deca-task/internal/auth/jwt"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 type authservice struct {
@@ -16,6 +17,12 @@ func NewAuthService(repo *authrepository) *authservice {
 }
 
 func (s *authservice) LoginUser(phone uint) (*dto.RequestOTPResponse, error) {
+	if err := s.repo.IncrementOtpRequestCount(phone, 10*time.Minute, 3); err != nil {
+		if err == ErrRateLimitExceeded {
+			return nil, fmt.Errorf("too many OTP requests, try again later")
+		}
+		return nil, err
+	}
 	Otp, err := s.repo.SaveOTP(phone)
 	if err != nil {
 		return nil, err

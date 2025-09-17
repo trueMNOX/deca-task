@@ -27,6 +27,7 @@ func (h *authHandler) AuthRoute(r *gin.RouterGroup) {
 // @Produce  json
 // @Param data body dto.RequestOTPDTO true "Request body"
 // @Success 200 {object} dto.RequestOTPResponse
+// @Failure 429 {object} map[string]string
 // @Failure 400 {object} map[string]string
 // @Router /api/v1/login [post]
 func (h *authHandler) Login(c *gin.Context) {
@@ -39,9 +40,11 @@ func (h *authHandler) Login(c *gin.Context) {
 	}
 	otp, err := h.authService.LoginUser(input.Phone)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		status := http.StatusInternalServerError
+		if err.Error() == "too many OTP requests, try again later" {
+			status = http.StatusTooManyRequests
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, dto.RequestOTPResponse{
