@@ -17,10 +17,10 @@ type Config struct {
 	PostgresPassword string
 	PostgresDB       string
 
-	RedisHost string
-	RedisPort string
+	RedisHost     string
+	RedisPort     string
 	RedisPassword string
-	RedisDB   int
+	RedisDB       int
 
 	JWTSecret   string
 	JWTExpireIn int
@@ -48,13 +48,13 @@ func LoadConfig() *Config {
 		PostgresHost:     getEnv("POSTGRES_HOST", "localhost"),
 		PostgresPort:     getEnv("POSTGRES_PORT", "5432"),
 		PostgresUser:     getEnv("POSTGRES_USER", "postgres"),
-		PostgresPassword: getEnv("POSTGRES_PASSWORD", "29557"),
-		PostgresDB:       getEnv("POSTGRES_DB", "postgres_go"),
+		PostgresPassword: getEnv("POSTGRES_PASSWORD", "chnage_me"),
+		PostgresDB:       getEnv("POSTGRES_DB", "postgres_db"),
 
-		RedisHost: getEnv("REDIS_HOST", "localhost"),
-		RedisPort: getEnv("REDIS_PORT", "6379"),
-		RedisPassword: getEnv("REDSI_PASSWORD","1234"),
-		RedisDB:   redisDB,
+		RedisHost:     getEnv("REDIS_HOST", "localhost"),
+		RedisPort:     getEnv("REDIS_PORT", "6379"),
+		RedisPassword: getEnv("REDIS_PASSWORD", ""),
+		RedisDB:       redisDB,
 
 		JWTSecret:   getEnv("JWT_SECRET", "supersecret"),
 		JWTExpireIn: jwtExpireIn,
