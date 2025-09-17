@@ -1,6 +1,13 @@
+// @title OTP Auth Service API
+// @version 1.0
+// @description Backend service in Golang for OTP-based login & user management
+// @contact.name Mehdi Dev
+// @host localhost:8080
+// @BasePath /
 package main
 
 import (
+	_ "deca-task/docs"
 	"deca-task/internal/auth"
 	"deca-task/internal/config"
 	"deca-task/internal/database"
@@ -8,6 +15,8 @@ import (
 	"deca-task/internal/user"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -29,5 +38,6 @@ func main() {
 	v2 := r.Group("/api/v2", middleware.AuthModdleware())
 	userHandler.UsersRoute(v2)
 
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
 }

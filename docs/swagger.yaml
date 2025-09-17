@@ -1,0 +1,191 @@
+basePath: /
+definitions:
+  dto.RequestOTPDTO:
+    properties:
+      phone:
+        type: integer
+    required:
+    - phone
+    type: object
+  dto.RequestOTPResponse:
+    properties:
+      message:
+        type: string
+      otp:
+        type: string
+    type: object
+  dto.VerifyOTPDTO:
+    properties:
+      otp:
+        type: string
+      phone:
+        type: integer
+    required:
+    - otp
+    - phone
+    type: object
+  dto.VerifyOTPResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  user.UserListResponse:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/user.UserResponse'
+        type: array
+    type: object
+  user.UserResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      phone:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Mehdi Dev
+  description: Backend service in Golang for OTP-based login & user management
+  title: OTP Auth Service API
+  version: "1.0"
+paths:
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Send phone number to receive an OTP (valid for 2 minutes)
+      parameters:
+      - description: Request body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RequestOTPDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RequestOTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Request OTP
+      tags:
+      - auth
+  /api/v1/verify:
+    post:
+      consumes:
+      - application/json
+      description: Verify OTP and return JWT if valid
+      parameters:
+      - description: Request body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyOTPDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VerifyOTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Verify OTP
+      tags:
+      - auth
+  /api/v2/users:
+    get:
+      consumes:
+      - application/json
+      description: Get users with pagination and optional phone search
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      - description: Search by phone
+        in: query
+        name: phone
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List users
+      tags:
+      - user
+  /api/v2/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user by ID
+      tags:
+      - user
+swagger: "2.0"
