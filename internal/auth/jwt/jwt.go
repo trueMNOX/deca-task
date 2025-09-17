@@ -69,3 +69,28 @@ func ParseToken(tokenString string) (*jwt.MapClaims, error) {
 	}
 	return &claims, nil
 }
+
+func GetUserId(claims jwt.MapClaims) (uint, error) {
+	v, ok := claims["user_id"]
+	if !ok {
+		return 0, errors.New("user_id claim not found")
+	}
+	switch t := v.(type) {
+	case float64:
+		return uint(t), nil
+	case float32:
+		return uint(t), nil
+	case int:
+		return uint(t), nil
+	case int64:
+		return uint(t), nil
+	case string:
+		if u, err := strconv.ParseUint(t, 10, 64); err == nil {
+			return uint(u), nil
+		} else {
+			return 0, fmt.Errorf("invalid user_id string: %w", err)
+		}
+	default:
+		return 0, fmt.Errorf("unexpected user_id type %T", v)
+	}
+}
