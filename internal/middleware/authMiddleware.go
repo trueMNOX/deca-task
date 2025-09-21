@@ -3,7 +3,6 @@ package middleware
 import (
 	"deca-task/internal/auth/jwt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +20,7 @@ func AuthModdleware() gin.HandlerFunc {
 			return
 		}
 		userId, err := jwt.GetUserId(*token)
-		c.Set(strconv.Itoa(int(userId)), "user_id")
+		c.Set("user_id", userId)
 		c.Next()
 	}
 }

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"deca-task/internal/models"
 	"deca-task/internal/user/dto"
 	"net/http"
 	"strconv"
@@ -89,22 +88,20 @@ func (h *userHandler) FindUserById(c *gin.Context) {
 // @Router /api/v2/users [get]
 func (h *userHandler) FindUsers(c *gin.Context) {
 	var input struct {
-		Page  int `json:"page"`
-		Limit int `json:"limit"`
-	}
+        Page  int    `form:"page"`
+        Limit int    `form:"limit"`
+        Phone string `form:"phone"`
+    }
 	input.Limit, _ = strconv.Atoi(c.DefaultQuery("limit", "10"))
 	input.Page, _ = strconv.Atoi(c.DefaultQuery("page", "1"))
-	phone := c.Query("phone")
+	input.Phone = c.Query("phone")
+
 	if err := c.ShouldBindQuery(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if phone != "" {
-		query := h.userService.userRepository.db.Model(&models.User{})
-		query = query.Where("phone LIKE ?", "%"+phone+"%")
-	}
-	users, total, err := h.userService.FindUsers(input.Page, input.Limit)
+	users, total, err := h.userService.FindUsers(input.Page, input.Limit, input.Phone)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

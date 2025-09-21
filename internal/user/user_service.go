@@ -17,14 +17,14 @@ func (s *userService) FindUserById(userid uint) (*models.User, error) {
 	}
 	return user, nil
 }
-func (s *userService) FindUsers(page, limit int) ([]models.User, int, error) {
+func (s *userService) FindUsers(page, limit int,  phone string) ([]models.User, int, error) {
 	if page < 1 {
 		page = 1
 	}
 	if limit < 1 {
 		limit = 10
 	}
-	users, total, err := s.userRepository.GetUsers(page, limit)
+	users, total, err := s.userRepository.GetUsers(page, limit, phone)
 	if err != nil {
 		return nil, 0, err
 	}

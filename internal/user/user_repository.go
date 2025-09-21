@@ -25,12 +25,15 @@ func (r *userRepository) FindUserById(userid uint) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) GetUsers(page, limit int) ([]models.User, int, error) {
+func (r *userRepository) GetUsers(page, limit int, phone string) ([]models.User, int, error) {
 	var users []models.User
 	var total int64
 
-
-	if err := r.db.Model(&models.User{}).Count(&total).Error; err != nil {
+	query := r.db.Model(&models.User{})
+	if phone != "" {
+		query = query.Where("phone_number LIKE ?", "%"+phone+"%")
+	}
+	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
