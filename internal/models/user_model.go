@@ -12,5 +12,6 @@ type User struct {
 	RegisteredAt time.Time      `gorm:"autoCreateTime" json:"registered_at"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
+	Role string `json:"role"`
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
 }
